@@ -101,3 +101,9 @@
          (test c a))))
 (func 1 2 3)
 
+
+(define (func a b c)
+    (if (and (> a b) (> b c))
+        (+ a b)))
+
+
