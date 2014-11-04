@@ -103,7 +103,13 @@
 
 
 (define (func a b c)
-    (if (and (> a b) (> b c))
-        (+ a b)))
+    (cond (and (> a b) (> b c)) (+ a b))
+          ((and (> b c) (> c a)) (+ b c))
+          ((and (> c a) (> a b)) (+ c a)))
+
+
+(define (func a b c)
+    (cond (> a b)
+          (+ a b)))
 
 
