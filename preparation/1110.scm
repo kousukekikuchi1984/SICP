@@ -89,27 +89,46 @@
       (- 2 7)))
 
 
-;; Excercise 1.3    動かない。。。
+;; Excercise 1.3
 (define (test d e)
   (+ (* d d) (* e e)))
-(define (func a b c)
-  (cond ((and (> a b) (> b c))
-         (test a b))
-        ((and (> b c) (> c a))
-         (test b c))
-        ((and (> c a) (> a b))
-         (test c a))))
-(func 1 2 3)
+
+(define (power a b c)
+  (cond ((> a b)
+         (if (> b c)
+           (test a b)
+           (test a c)))
+        ((> b c)
+         (if (> c a)
+           (test b c)
+           (test b a)))
+        ((> c a)
+         (if (> a b)
+           (test c a)
+           (test c b)))))
+
+;; Excercise 1.4
+(define (a-plus-abs-b a b)
+    ((if (> b 0)
+       +
+       -)
+     a b))
+
+(a-plus-abs-b 1 2)
+;; 3
+(a-plus-abs-b 1 -2)
+;; 3
+;; 最初の関数がbの値によって決定する
 
 
-(define (func a b c)
-    (cond (and (> a b) (> b c)) (+ a b))
-          ((and (> b c) (> c a)) (+ b c))
-          ((and (> c a) (> a b)) (+ c a)))
+;; Excercise 1.5
+(define (p) (p))
 
+(define (test x y)
+    (if (= x 0)
+      0
+      y))
 
-(define (func a b c)
-    (cond (> a b)
-          (+ a b)))
-
-
+;;無限ループ
+;;pという関数を作っていて、その戻り値がpという関数であるため
+;;
