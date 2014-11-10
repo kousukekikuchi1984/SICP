@@ -132,3 +132,96 @@
 ;;無限ループ
 ;;pという関数を作っていて、その戻り値がpという関数であるため
 ;;
+
+
+
+;; 1.1.7
+
+
+(define (square x)
+    (* x x))
+
+(define (sqrt-iter guess x)
+  (if (good-enough? guess x)
+        guess
+        (sqrt-iter (improve guess x)
+        x)))
+
+(define (improve guess x)
+  (average guess (/ x guess)))
+
+(define (average x y)
+  (/ (+ x y) 2))
+
+(define (good-enough? guess x)
+  (< (abs (- (square guess) x)) 0.001))
+
+(define (sqrt x)
+  (sqrt-iter 1.0 x))
+
+(sqrt 9)
+
+;; Excercise 1.6
+(define (new-if predicate then-clause else-clause)
+  (cond (predicate then-clause)
+          (else else-clause)))
+
+(new-if (= 2 3) 0 5)
+
+(define (sqrt-iter guess x)
+  (new-if (good-enough? guess x)
+            guess
+            (sqrt-iter (improve guess x)
+                x)))
+
+(sqrt-iter 1.0 10)
+;;0  (good-enough? guess x)
+;;      At line 44 of "(stdin)"
+;;1  (sqrt-iter (improve guess x) x)
+;;      At line 46 of "(stdin)"
+;; 無限ループと思わえる
+
+;; 調べてみると、ifやcondは特殊形式であるが、new-ifは手続きの適用になる。手続きの適用ではすべての中身が評価される。
+;; そのために、trueになっても、計算が続き無限ループに入る
+
+;; Excercise 1.7
+;; 小さい場合、誤差が大きい。大きい場合、計算回数が多くなる　くらいしかわからん
+;; 上のことが本当なら、割合で決めるべき。
+
+;; Excercise 1.8
+
+(define (newton x y)
+    (/
+        (+
+            (/ x
+                (* y y))
+            (* 2 y))
+        3))
+
+
+;; 合わない
+
+;; 1.1.8
+(define (sqrt x)
+  (define (good-enough? guess x)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess x)
+    (average guess (/ x guess)))
+  (define (sqrt-iter guess x)
+    (if (good-enough?  x)
+        guess
+        (sqrt-iter (improve guess x) x)))
+  (sqrt-iter 1.0 x))
+
+(define (sqrt x)
+  (define (good-enough? guess)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  (define (sqrt-iter guess)
+    (if (good-enough? guess)
+        guess
+        (sqrt-iter (improve guess))))
+  (sqrt-iter 1.0))
+
+
