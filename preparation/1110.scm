@@ -146,6 +146,7 @@
 
 (define (sqrt-iter guess x)
   (if (good-enough? guess x)
+        (print guess)
         guess
         (sqrt-iter (improve guess x)
         x)))
@@ -177,20 +178,20 @@
             (sqrt-iter (improve guess x) ; 3, 2, 10
                 x))) ;10
 
-def new-if(test, then, else):
-    if test:
-        return then
-    else:
-        return else
+;def new-if(test, then, else):
+;    if test:
+;        return then
+;    else:
+;        return else
 
-def sqrt-iter(g, x):
-    if good-enough?(g,x):
-        return g
-    else:
-        return sqrt-iter(improve(g, x), x)
+;def sqrt-iter(g, x):
+;    if good-enough?(g,x):
+;        return g
+;    else:
+;        return sqrt-iter(improve(g, x), x)
 
-def sqrt-iter(g, x):
-    return new-if(good-enough?(g,x), g, sqrt-iter(improve(g, x) x))
+;def sqrt-iter(g, x):
+;    return new-if(good-enough?(g,x), g, sqrt-iter(improve(g, x) x))
 
 
 (sqrt-iter 1.0 10)
@@ -206,19 +207,22 @@ def sqrt-iter(g, x):
 ;; Excercise 1.7
 ;; 小さい場合、誤差が大きい。大きい場合、計算回数が多くなる　くらいしかわからん
 ;; 上のことが本当なら、割合で決めるべき。
+(define (sqrt x)
+  (define (good-enough? guess)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  (define (sqrt-iter guess previous_guess)
+    (if (or (good-enough? guess) (< (abs (- previous_guess guess)) 0.001))
+        guess
+        (sqrt-iter (improve guess) previous_guess)))
+  (define (sqrt-iter1 guess)
+    (if (good-enough? guess)
+        guess
+        (sqrt-iter (improve guess) guess)))
+  (sqrt-iter1 1.0))
 
-;; Excercise 1.8
 
-(define (newton x y)
-    (/
-        (+
-            (/ x
-                (* y y))
-            (* 2 y))
-        3))
-
-
-;; 合わない
 
 ;; 1.1.8
 (define (sqrt x)
@@ -235,6 +239,7 @@ def sqrt-iter(g, x):
 
 (define (sqrt x)
   (define (good-enough? guess)
+    (print guess)
     (< (abs (- (square guess) x)) 0.001))
   (define (improve guess)
     (average guess (/ x guess)))
