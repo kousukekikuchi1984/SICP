@@ -223,6 +223,39 @@
   (sqrt-iter1 1.0))
 
 
+;; excercise 1.8
+(define (route x y)
+    (/ (+ (/ x (* y y)) (* 2 y)) 3)
+
+(define (cubic_route guess)
+  (define (good-enough? guess)
+    (< (abs (- (square guess) guess)) 0.001))
+  (define (improve guess)
+    (/ (+ (/ guess (* improve improve)) (* 2 improve)) 3))
+  (define (sqrt-iter guess previous_guess)
+    (if (or (good-enough? guess) (< (abs (- previous_guess guess)) 0.001))
+        guess
+        (sqrt-iter (improve guess) previous_guess)))
+  (define (sqrt-iter1 guess)
+    (if (good-enough? guess)
+        guess
+        (sqrt-iter (improve guess) guess)))
+  (sqrt-iter1 1.0))
+
+(define (cubic guess previous x)
+  (if (good-enough? guess previous)
+    guess
+    (cubic guess (improve guess x) x)))
+
+(define (good-enough? guess previous)
+  (< (abs (- (- previous guess) guess)) 0.001))
+
+(define (improve guess x)
+  (print guess)
+  (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))
+
+(define (cube_root x)
+  (cubic 0.0 1.0 x))
 
 ;; 1.1.8
 (define (sqrt x)
