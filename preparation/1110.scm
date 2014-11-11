@@ -88,6 +88,9 @@
       (- 6 2)
       (- 2 7)))
 
+(/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5)))))
+   (* 3 (- 6 2) (- 2 7)))
+
 
 ;; Excercise 1.3
 (define (test d e)
@@ -130,7 +133,7 @@
       y))
 
 ;;無限ループ
-;;pという関数を作っていて、その戻り値がpという関数であるため
+;;pという関数を作っていて、その戻り値がpの呼び出しを行ってる
 ;;
 
 
@@ -169,10 +172,26 @@
 (new-if (= 2 3) 0 5)
 
 (define (sqrt-iter guess x)
-  (new-if (good-enough? guess x)
-            guess
-            (sqrt-iter (improve guess x)
-                x)))
+  (new-if ; #f(good-enough? guess x)
+          ; 1.0  guess
+            (sqrt-iter (improve guess x) ; 3, 2, 10
+                x))) ;10
+
+def new-if(test, then, else):
+    if test:
+        return then
+    else:
+        return else
+
+def sqrt-iter(g, x):
+    if good-enough?(g,x):
+        return g
+    else:
+        return sqrt-iter(improve(g, x), x)
+
+def sqrt-iter(g, x):
+    return new-if(good-enough?(g,x), g, sqrt-iter(improve(g, x) x))
+
 
 (sqrt-iter 1.0 10)
 ;;0  (good-enough? guess x)
@@ -204,11 +223,12 @@
 ;; 1.1.8
 (define (sqrt x)
   (define (good-enough? guess x)
-    (< (abs (- (square guess) x)) 0.001))
+    (print guess)
+    (< (abs (- (square guess) x)) 0.001)) ;; 前のguessに比べ変化が小さくなったときに止める
   (define (improve guess x)
     (average guess (/ x guess)))
   (define (sqrt-iter guess x)
-    (if (good-enough?  x)
+    (if (or (good-enough? guess x))
         guess
         (sqrt-iter (improve guess x) x)))
   (sqrt-iter 1.0 x))
