@@ -216,6 +216,10 @@
     (if (or (good-enough? guess) (< (abs (- previous_guess guess)) 0.001))
         guess
         (sqrt-iter (improve guess) previous_guess)))
+  (define (square x)
+    (* x x))
+  (define (average x y)
+    (/ (+ x y) 2))
   (define (sqrt-iter1 guess)
     (if (good-enough? guess)
         guess
@@ -257,29 +261,22 @@
 (define (cube_root x)
   (cubic 0.0 1.0 x))
 
-;; 1.1.8
-(define (sqrt x)
-  (define (good-enough? guess x)
-    (print guess)
-    (< (abs (- (square guess) x)) 0.001)) ;; 前のguessに比べ変化が小さくなったときに止める
-  (define (improve guess x)
-    (average guess (/ x guess)))
-  (define (sqrt-iter guess x)
-    (if (or (good-enough? guess x))
-        guess
-        (sqrt-iter (improve guess x) x)))
-  (sqrt-iter 1.0 x))
 
-(define (sqrt x)
-  (define (good-enough? guess)
-    (print guess)
-    (< (abs (- (square guess) x)) 0.001))
-  (define (improve guess)
-    (average guess (/ x guess)))
-  (define (sqrt-iter guess)
-    (if (good-enough? guess)
-        guess
-        (sqrt-iter (improve guess))))
-  (sqrt-iter 1.0))
+(define (cubic guess previous x)
+    (if (good-enough? guess previous)
+    guess
+    (cubic (improve guess x) guess x)))
+
+(define (good-enough? guess previous)
+    (< (abs (- guess previous)) 0.001))
+
+(define (improve guess x)
+  (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))
+
+(define (cubic1 guess x)
+    (cubic (improve guess x) guess x))
+
+(define (cube_root x)
+    (cubic1 (improve 1.0 x) x))
 
 
