@@ -242,3 +242,75 @@
 ;  √√ø  わからない。
 
 
+; 1.2.4
+(define (expt b n)
+  (if (= n 0)
+    1
+    (* b (expt b (- n 1)))))
+
+
+(define (expt b n)
+  (expt-iter b n 1))
+
+(define (expt-iter b counter product)
+  (if (= counter 0)
+    product
+    (expt-iter b (- counter 1) (* b product))))
+
+(define (fast-expt b n)
+  (cond ((= n 0) 1)
+        ((even? n) (square (fast-expt b (/ n 2))))
+        (else (* b (fast-expt b (- n 1))))))
+
+(define (square x)
+  (* x x))
+
+
+(define (even? n)
+  (= (remainder n 2) 0))
+
+; 1.16
+;;１．終了時にはそれが答えになり、
+;;２．かつ終了しない場合は再帰処理の材料になる
+;;
+(define (fast-expt b n a)
+  (* a (fast-expt b (- n 1) (* a b))))
+
+
+(define (fast-expt b n a)
+  (if (= n 0)
+    a
+    (fast-expt b (- n 1) (* a b))))
+
+(define (fast-expt b n a)
+  (cond ((= n 0) a)
+        ((even? n) (fast-expt (* b b) (- n 1) a))
+        (else (fast-expt b (- n 1) (* a b)))))
+
+
+; 1.17
+(define (* a b)
+  (if (= b 0)
+    0
+    (* a (* a (- b 1)))))
+
+(define (fast-times a b)
+  (times a b 0))
+
+(define (times a b state)
+  (cond ((= b 0) 0)
+        ((even? b) (times (double a) (halve b) state))
+        (else (times (double a) (halve (- b 1) (+ state a)))))
+
+; 1.18
+(define (fast-times a b)
+  (times a b 0))
+
+(define (times a b state)
+  (cond ((= b 0) 0)
+        ((even? b) (times (double a) (halve b) state))
+        (else (times (double a) (halve (- b 1) (+ state a)))))
+
+; 1.19
+; 訳がわからないよ／人◕‿‿◕人＼
+
