@@ -312,5 +312,76 @@
         (else (times (double a) (halve (- b 1) (+ state a)))))
 
 ; 1.19
+;
+; maxtrixを作る、TpnTpnを計算して、an+1とbn+1の値を計算
+
+(define (fib n)
+  (fib-iter 1 0 0 1 n))
+
+
+(define (fib-iter a b p q count)
+  (cond ((= count 0) b)
+        ((even? count)
+         (fib-iter a
+                   b
+                   (+ (square p) (square q))
+                   (+ (* 2 p q) (square q))
+                   (/ count 2)))
+        (else (fib-iter (+ (* b q) (* a q) (* a p))
+                        (+ (* b p) (* a q))
+                        p
+                        q
+                        (- count 1)))))
+
+(define (square x)
+  (* x x))
+
+; 1.2.5
+; Euclidの互除法
+(define (gcd a b)
+  (if (= b 0)
+    a
+    (gcd b (remainder a b))))
+
+; 1.20
+;
 ; 訳がわからないよ／人◕‿‿◕人＼
+
+(define (gcd a b)
+  (print a)
+  (if (= b 0)
+    a
+    (gcd b (remainder a b))))
+
+(gcd 206 40)
+
+;; step 1
+(if (= 40 0)
+  206
+  (gcd 40 (remainder 206 40)))
+
+(gcd 40 (remainder 206 40))
+(if (= (remainder 206 40) 0)
+  40
+  (gcd (remainder 206 40) (remainder 40 (remainder 206 40))))
+
+(gcd 40 (remainder 206 40))
+(if (= 6 0)
+  40
+  (gcd (remainder 206 40) (remainder 40 (remainder 206 40)))) ;;
+
+(if (= (remainder 40 (remainder 206 40) 0))
+  (remainder 206 40)
+  (gcd (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))))
+;; 書くのがめんどい
+
+
+
+(define (p) (p))
+
+(define (test x y)
+  if (= x 0)
+  0
+  y)
+(test 0 (p))
 
