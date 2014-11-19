@@ -208,23 +208,23 @@
 ;; 小さい場合、誤差が大きい。大きい場合、計算回数が多くなる　くらいしかわからん
 ;; 上のことが本当なら、割合で決めるべき。
 (define (sqrt x)
-  (define (good-enough? guess)
-    (< (abs (- (square guess) x)) 0.001))
+  (define (good-enough? guess previous_guess)
+    (< (abs (- previous_guess guess)) 0.00001))
   (define (improve guess)
     (average guess (/ x guess)))
   (define (sqrt-iter guess previous_guess)
-    (if (or (good-enough? guess) (< (abs (- previous_guess guess)) 0.001))
+    (if (good-enough? guess previous_guess)
         guess
-        (sqrt-iter (improve guess) previous_guess)))
+        (sqrt-iter (improve guess) guess)))
   (define (square x)
     (* x x))
   (define (average x y)
     (/ (+ x y) 2))
-  (define (sqrt-iter1 guess)
-    (if (good-enough? guess)
+  (define (sqrt-iter1 guess previous_guess)
+    (if (good-enough? guess previous_guess)
         guess
         (sqrt-iter (improve guess) guess)))
-  (sqrt-iter1 1.0))
+  (sqrt-iter1 1.0 2.0))
 
 
 ;; excercise 1.8

@@ -91,6 +91,25 @@
         (minus 4 1) 5 1))))
 ;; recursive stateを示す変数がないため
 
+(+ 4 5)
+(inc (+ 3 5))
+(inc (inc (+ 2 5)))
+(inc (inc (inc (+ 1 5))))
+(inc (inc (inc (inc (+ 0 5)))))
+(inc (inc (inc (inc 5))))
+(inc (inc (inc 6)))
+(inc (inc 7))
+(inc 8)
+9
+
+
+(+ 4 5)
+(+ 3 6)
+(+ 2 7)
+(+ 1 8)
+(+ 0 9)
+9
+
 ;; 1.10
 (define (A x y)
     (cond ((= y 0) 0)
@@ -104,7 +123,7 @@
 
 (define (f n) (A 0 n))  ; fn = 2*n
 (define (g n) (A 1 n))  ; gn = 2^n
-(define (h n) (A 2 n))  ; hn = (n+1) * 2^(n+1) ?
+(define (h n) (A 2 n))  ; h(n) = 2^h(n-1)
 
 ;1.2.2
 ;木構造再帰プロセス
@@ -168,7 +187,15 @@
 ;; 1.11
 (define (func n)
   (cond (>= n 3)
-        (+ (func (- n 1) (* 2 (func (- n 2)) (* 3 (func ((- n 3)))))))))
+        (+ (func (- n 1) (* 2 (func (- n 2))) (* 3 (func ((- n 3)))))
+        (else n))))
+
+(define (func n)
+  (if (< n 3)
+    n
+    (+ (func (- n 1))
+       (* 2 (func (- n 2)))
+       (* 3 (func (- n 3))))))
 
 (define (func n)
   (func-iter 1 1 1 n 0))
@@ -177,6 +204,39 @@
   (if (= state n)
     n-1
     (func-iter (+ n-1 (* 2 n-2) (* 3 n-3)) n-1 n-2 n (+ state 1))))
+
+
+
+(define (func n)
+  (if (< n 3)
+    n
+    (func-iter n s1 s2 s3 iter)))
+(define (func-iter n s1 s2 s3 iter)
+  (if(= n iter)
+    s1
+    (func-iter n (func-iter n s1 s2 s3 iter))))
+
+
+
+;give up
+;
+(define (f x)
+  (define (iter p pp ppp count)
+    (if (< count 3)
+        p
+        (iter (+ p (* 2 pp) (* 3 ppp)) p pp (- count 1))))
+  (if (< x 3)
+    x
+    (iter (- x 1) (- x 2) (- x 3) x)))
+
+(define (f x)
+  (define (iter p pp ppp index limit)
+    (if (> index limit)
+        p
+        (iter (+ p (* 2 pp) (* 3 ppp)) p pp (+ index 1) limit)))
+  (if (< x 3)
+    x
+    (iter 2 1 0 3 x)))
 ;;
 
 ;1.12
@@ -191,6 +251,197 @@
 ;; 1.13  ここにはかかない
 ;; fn = fai-n + kai-nとして定義
 ;; またfai-2 とkai-2をあらかじめ計算して、帰納法に流し込む
+;; また、ø=(1-√5)/√5 は|ø| < 1なので、ø^nにすると0に収束する
+;;
+
+;; 1.2.3
 ;;
 ;;
+;;1.14
+ (define (count-change amount)
+  (cc amount 5))
+
+(define (cc amount kinds-of-coins)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (= kinds-of-coins 0)) 0)
+        (else (+ (cc amount
+                     (- kinds-of-coins 1))
+                 (cc (- amount
+                        (first-denomination kinds-of-coins))
+                     kinds-of-coins)))))
+
+(define (first-denomination kinds-of-coins)
+  (cond ((= kinds-of-coins 1) 1)
+        ((= kinds-of-coins 2) 5)
+        ((= kinds-of-coins 3) 10)
+        ((= kinds-of-coins 4) 25)
+        ((= kinds-of-coins 5) 50)))
+; count-change 11
+;   cc amount 11
+;
+;
+;紙でやる
+;
+;
+;
+; 1.15
+;
+(define (cube x) (* x x x))
+
+(define (p x) (- (* 3 x) (* 4 (cube x))))
+
+(define (sine angle)
+  (print angle)
+  (if (not (> (abs angle) 0.1))
+    angle
+    (p (sine (/ angle 3.0)))))
+
+; 7回
+; 1:5 2:5 3:6 4:6 16:7 32:8
+; （この評価式の前提はxが十分に小さい時なので、ナンセンスだと思うけどな
+;  √√ø  わからない。
+
+
+; 1.2.4
+(define (expt b n)
+  (if (= n 0)
+    1
+    (* b (expt b (- n 1)))))
+
+
+(define (expt b n)
+  (expt-iter b n 1))
+
+(define (expt-iter b counter product)
+  (if (= counter 0)
+    product
+    (expt-iter b (- counter 1) (* b product))))
+
+(define (fast-expt b n)
+  (cond ((= n 0) 1)
+        ((even? n) (square (fast-expt b (/ n 2))))
+        (else (* b (fast-expt b (- n 1))))))
+
+(define (square x)
+  (* x x))
+
+
+(define (even? n)
+  (= (remainder n 2) 0))
+
+; 1.16
+;;１．終了時にはそれが答えになり、
+;;２．かつ終了しない場合は再帰処理の材料になる
 ;;
+(define (fast-expt b n a)
+  (* a (fast-expt b (- n 1) (* a b))))
+
+
+(define (fast-expt b n a)
+  (if (= n 0)
+    a
+    (fast-expt b (- n 1) (* a b))))
+
+(define (fast-expt b n a)
+  (cond ((= n 0) a)
+        ((even? n) (fast-expt (* b b) (- n 1) a))
+        (else (fast-expt b (- n 1) (* a b)))))
+
+
+; 1.17
+(define (* a b)
+  (if (= b 0)
+    0
+    (* a (* a (- b 1)))))
+
+(define (fast-times a b)
+  (times a b 0))
+
+(define (times a b state)
+  (cond ((= b 0) 0)
+        ((even? b) (times (double a) (halve b) state))
+        (else (times (double a) (halve (- b 1) (+ state a)))))
+
+; 1.18
+(define (fast-times a b)
+  (times a b 0))
+
+(define (times a b state)
+  (cond ((= b 0) 0)
+        ((even? b) (times (double a) (halve b) state))
+        (else (times (double a) (halve (- b 1) (+ state a)))))
+
+; 1.19
+;
+; maxtrixを作る、TpnTpnを計算して、an+1とbn+1の値を計算
+
+(define (fib n)
+  (fib-iter 1 0 0 1 n))
+
+
+(define (fib-iter a b p q count)
+  (cond ((= count 0) b)
+        ((even? count)
+         (fib-iter a
+                   b
+                   (+ (square p) (square q))
+                   (+ (* 2 p q) (square q))
+                   (/ count 2)))
+        (else (fib-iter (+ (* b q) (* a q) (* a p))
+                        (+ (* b p) (* a q))
+                        p
+                        q
+                        (- count 1)))))
+
+(define (square x)
+  (* x x))
+
+; 1.2.5
+; Euclidの互除法
+(define (gcd a b)
+  (if (= b 0)
+    a
+    (gcd b (remainder a b))))
+
+; 1.20
+;
+; 訳がわからないよ／人◕‿‿◕人＼
+
+(define (gcd a b)
+  (print a)
+  (if (= b 0)
+    a
+    (gcd b (remainder a b))))
+
+(gcd 206 40)
+
+;; step 1
+(if (= 40 0)
+  206
+  (gcd 40 (remainder 206 40)))
+
+(gcd 40 (remainder 206 40))
+(if (= (remainder 206 40) 0)
+  40
+  (gcd (remainder 206 40) (remainder 40 (remainder 206 40))))
+
+(gcd 40 (remainder 206 40))
+(if (= 6 0)
+  40
+  (gcd (remainder 206 40) (remainder 40 (remainder 206 40)))) ;;
+
+(if (= (remainder 40 (remainder 206 40) 0))
+  (remainder 206 40)
+  (gcd (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))))
+;; 書くのがめんどい
+
+
+
+(define (p) (p))
+
+(define (test x y)
+  if (= x 0)
+  0
+  y)
+(test 0 (p))
+
