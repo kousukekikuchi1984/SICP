@@ -91,6 +91,25 @@
         (minus 4 1) 5 1))))
 ;; recursive stateを示す変数がないため
 
+(+ 4 5)
+(inc (+ 3 5))
+(inc (inc (+ 2 5)))
+(inc (inc (inc (+ 1 5))))
+(inc (inc (inc (inc (+ 0 5)))))
+(inc (inc (inc (inc 5))))
+(inc (inc (inc 6)))
+(inc (inc 7))
+(inc 8)
+9
+
+
+(+ 4 5)
+(+ 3 6)
+(+ 2 7)
+(+ 1 8)
+(+ 0 9)
+9
+
 ;; 1.10
 (define (A x y)
     (cond ((= y 0) 0)
@@ -104,7 +123,7 @@
 
 (define (f n) (A 0 n))  ; fn = 2*n
 (define (g n) (A 1 n))  ; gn = 2^n
-(define (h n) (A 2 n))  ; hn = (n+1) * 2^(n+1) ?
+(define (h n) (A 2 n))  ; h(n) = 2^h(n-1)
 
 ;1.2.2
 ;木構造再帰プロセス
@@ -168,7 +187,15 @@
 ;; 1.11
 (define (func n)
   (cond (>= n 3)
-        (+ (func (- n 1) (* 2 (func (- n 2)) (* 3 (func ((- n 3)))))))))
+        (+ (func (- n 1) (* 2 (func (- n 2))) (* 3 (func ((- n 3)))))
+        (else n))))
+
+(define (func n)
+  (if (< n 3)
+    n
+    (+ (func (- n 1))
+       (* 2 (func (- n 2)))
+       (* 3 (func (- n 3))))))
 
 (define (func n)
   (func-iter 1 1 1 n 0))
@@ -177,6 +204,39 @@
   (if (= state n)
     n-1
     (func-iter (+ n-1 (* 2 n-2) (* 3 n-3)) n-1 n-2 n (+ state 1))))
+
+
+
+(define (func n)
+  (if (< n 3)
+    n
+    (func-iter n s1 s2 s3 iter)))
+(define (func-iter n s1 s2 s3 iter)
+  (if(= n iter)
+    s1
+    (func-iter n (func-iter n s1 s2 s3 iter))))
+
+
+
+;give up
+;
+(define (f x)
+  (define (iter p pp ppp count)
+    (if (< count 3)
+        p
+        (iter (+ p (* 2 pp) (* 3 ppp)) p pp (- count 1))))
+  (if (< x 3)
+    x
+    (iter (- x 1) (- x 2) (- x 3) x)))
+
+(define (f x)
+  (define (iter p pp ppp index limit)
+    (if (> index limit)
+        p
+        (iter (+ p (* 2 pp) (* 3 ppp)) p pp (+ index 1) limit)))
+  (if (< x 3)
+    x
+    (iter 2 1 0 3 x)))
 ;;
 
 ;1.12
