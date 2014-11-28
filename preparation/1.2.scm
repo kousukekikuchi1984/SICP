@@ -314,8 +314,6 @@
     (p (sine (/ angle 3.0)))))
 
 ; 7回
-; 1:5 2:5 3:6 4:6 16:7 32:8
-; （この評価式の前提はxが十分に小さい時なので、ナンセンスだと思うけどな
 ;  √√ø  わからない。
 
 
@@ -361,6 +359,9 @@
         ((even? n) (fast-expt (* b b) (- n 1) a))
         (else (fast-expt b (- n 1) (* a b)))))
 
+; 偶数時bとnをおきかえる
+; 奇数時にaを更新
+; n = ０の時にaが求める値となる
 
 ; 1.17
 (define (* a b)
@@ -375,16 +376,34 @@
   (cond ((= b 0) 0)
         ((even? b) (times (double a) (halve b) state))
         (else (times (double a) (halve (- b 1) (+ state a)))))
+;; 対数的ステップ数
+(define (times a b)
+  (if (= b 0)
+    a
+    (+ a (times a (- b 1)))))
+
+(define (times a b)
+  (print a b)
+  (cond ((= b 0) a)
+        (even? b) (times (double a) (halve b))
+        (else (+ a (times a (- b 1))))))
 
 ; 1.18
 (define (fast-times a b)
   (times a b 0))
 
-(define (times a b state)
-  (cond ((= b 0) 0)
-        ((even? b) (times (double a) (halve b) state))
-        (else (times (double a) (halve (- b 1) (+ state a)))))
+(define (double x)
+  (* x 2))
 
+(define (halve x)
+  (/ x 2))
+
+(define (times a b state)
+  (cond ((= b 0) state)
+        ((even? b) (times (double a) (halve b) state))
+        (else (times (double a) (halve (- b 1)) (+ state a)))))
+
+;; 反復
 ; 1.19
 ;
 ; maxtrixを作る、TpnTpnを計算して、an+1とbn+1の値を計算
