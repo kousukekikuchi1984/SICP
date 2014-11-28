@@ -490,10 +490,39 @@
         (else (find-divisor n (+ test-divisor 1)))))
 
 
-(define (divides? )a i
+(define (divides? a b)
   (= (remainder b a) 0))
 
 
 (define (prime? n)
   (= n (smallest-divisor n)))
+
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (square (expmod base (/ exp 2) m))
+                    m))
+        (else
+          (remainder (* base (expmod base (- exp 1) m))
+                     m))))
+
+
+; 1.21
+; 最小で割れる数字を抜き出す方法を考える
+; 割り切れた場合、数字をstateとして記す。最後に返す
+;
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+
+(define (start-prime-test n start-time)
+  (if (prime? n)
+    (report-prime (- (runtime) start-time))))
+
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
 
