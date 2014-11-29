@@ -512,6 +512,25 @@
 ; 最小で割れる数字を抜き出す方法を考える
 ; 割り切れた場合、数字をstateとして記す。最後に返す
 ;
+(define (smallest-divisor n)
+  (find-divisor n n n))
+
+(define (find-divisor n test state)
+  (cond ((= test 1) state)
+        ((divides? test n) (find-divisor n (- test 1) test))
+        (else (find-divisor n (- test 1) state))))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+;gosh> (smallest-divisor 199)
+;199
+;gosh> (smallest-divisor 1999)
+;1999
+;gosh> (smallest-divisor 19999)
+;7
+
+;1.22
 
 (define (timed-prime-test n)
   (newline)
@@ -525,4 +544,141 @@
 (define (report-prime elapsed-time)
   (display " *** ")
   (display elapsed-time))
+(define (search-for-primes a b)
+  (search-for-primes-iter a b))
+
+(define (search-for-primes-iter a b)
+  (if (< a b)
+    (and (if (prime? a)
+           (timed-prime-test a))
+           (search-for-primes-iter (+ a 1) b))))
+
+(define (runtime)
+  (use srfi-11)
+  (let-values (((a b) (sys-gettimeofday)))
+              (+ (* a 1000000) b)))
+
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (square x)
+  (* x x))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+;;  (search-for-primes 1000 1100)
+;;
+;;  1009 *** 10
+;;  1013 *** 10
+;;  1019 *** 10
+;;  1021 *** 10
+;;  1031 *** 10
+;;  1033 *** 10
+;;  1039 *** 11
+;;  1049 *** 10
+;;  1051 *** 10
+;;  1061 *** 10
+;;  1063 *** 10
+;;  1069 *** 10
+;;  1087 *** 10
+;;  1091 *** 13
+;;  1093 *** 10
+;;  1097 *** 10#<undef>
+;;  (search-for-primes 10000 10100)
+;;
+;;  10007 *** 32
+;;  10009 *** 31
+;;  10037 *** 30
+;;  10039 *** 30
+;;  10061 *** 37
+;;  10067 *** 38
+;;  10069 *** 27
+;;  10079 *** 28
+;;  10091 *** 27
+;;  10093 *** 28
+;;  10099 *** 27#<undef>
+;;  (search-for-primes 100000 100100)
+;;
+;;  100003 *** 99
+;;  100019 *** 99
+;;  100043 *** 85
+;;  100049 *** 85
+;;  100057 *** 97
+;;  100069 *** 132#<undef>
+;;  (search-for-primes 1000000 1000100)
+;;
+;;  1000003 *** 342
+;;  1000033 *** 370
+;;  1000037 *** 295
+;;  1000039 *** 316
+;;  1000081 *** 273
+;;  1000099 *** 353#<undef>
+;;  10^(1/2)になっている
+;;
+
+
+; 1.23
+ (define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+
+(define (start-prime-test n start-time)
+  (if (prime? n)
+    (report-prime (- (runtime) start-time))))
+
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+(define (search-for-primes a b)
+  (search-for-primes-iter a b))
+
+(define (search-for-primes-iter a b)
+  (if (< a b)
+    (and (if (prime? a)
+           (timed-prime-test a))
+           (search-for-primes-iter (+ a 1) b))))
+
+(define (runtime)
+  (use srfi-11)
+  (let-values (((a b) (sys-gettimeofday)))
+              (+ (* a 1000000) b)))
+
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (square x)
+  (* x x))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (next test-divisor)))))
+
+(define (next n)
+  (if (= n 2)
+    3
+    (+ n 2)))
+; 二倍の速度にはならない。計算回数が半分になるものの、増加の程度はroute(n)であるので、
+; 実行時間は1/route(2)になる。  appendix: route(2) = 1.414
+;
+
 
