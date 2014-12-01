@@ -682,7 +682,45 @@
 ;
 ;
 ;1.24 pass
-;f(1000000)/f(1000) = 1:2 であるはず（logで増加するため）
+;f(1000000)/f(1000) = 1/2 であるはず（logで増加するため
+;乱数がなくて動かないよ
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+
+(define (start-prime-test n start-time)
+  (if (fast-prime? n 100)
+    (report-prime (- (runtime) start-time))))
+
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+(define (search-for-primes a b)
+  (search-for-primes-iter a b))
+
+(define (search-for-primes-iter a b)
+  (if (< a b)
+    (and (if (fast-prime? a 100)
+           (timed-prime-test a))
+           (search-for-primes-iter (+ a 1) b))))
+
+(define (runtime)
+  (use srfi-11)
+  (let-values (((a b) (sys-gettimeofday)))
+              (+ (* a 1000000) b)))
+
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+
 (define (expmod base exp m)
   (cond ((= exp 0) 1)
         ((even? exp)
@@ -702,73 +740,16 @@
         ((fermat-test n) (fast-prime? n (- times 1)))
         (else false)))
 
-(define (timed-prime-test n)
-  (newline)
-  (display n)
-  (start-prime-test n (runtime)))
-
-(define (fast-prime? n times)
-  (cond ((= times 0) #t)
-        ((fermat-test n) (fast-prime? n (- times 1)))
-        (else #f)))
-
-(define (expmod base exp m)
-  (cond ((= exp 0) 1)
-        ((even? exp)
-         (remainder (square (expmod base (/ exp 2) m))
-                    m))
-        (else
-          (remainder (* base (expmod base (- exp 1) m))
-                     m))))
-
-(define (fermat-test n)
-  (try-it (+ 1 (random(- n 1)) n)))
-
-(define (try-it a n)
-  (= (expmod a n n) a))
-
-(define (start-prime-test n start-time)
-  (if (prime? n)
-    (report-prime (- (runtime) start-time))))
-
-(define (report-prime elapsed-time)
-  (display " *** ")
-  (display elapsed-time))
-(define (search-for-primes a b)
-  (search-for-primes-iter a b))
-
-(define (search-for-primes-iter a b)
-  (if (< a b)
-    (and (if (prime? a)
-           (timed-prime-test a))
-           (search-for-primes-iter (+ a 1) b))))
-
-(define (runtime)
-  (use srfi-11)
-  (let-values (((a b) (sys-gettimeofday)))
-              (+ (* a 1000000) b)))
-
-
-(define (smallest-divisor n)
-  (find-divisor n 2))
-
-
-(define (find-divisor n test-divisor)
-  (cond ((> (square test-divisor) n) n)
-        ((divides? test-divisor n) test-divisor)
-        (else (find-divisor n (+ test-divisor 1)))))
-
 (define (divides? a b)
   (= (remainder b a) 0))
 
 (define (square x)
   (* x x))
 
-(define (prime? n)
-  (= n (smallest-divisor n)))
-
 
 ; 1.25
+
+;pass
 
 ; 1.26
 (define (expmod base exp m)
