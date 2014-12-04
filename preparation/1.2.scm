@@ -683,7 +683,7 @@
 ;
 ;1.24 pass
 ;f(1000000)/f(1000) = 1/2 であるはず（logで増加するため
-;乱数がなくて動かないよ
+;わからん
 
 (define (timed-prime-test n)
   (newline)
@@ -698,7 +698,7 @@
   (display " *** ")
   (display elapsed-time))
 (define (search-for-primes a b)
-  (search-for-primes-iter a b))
+(search-for-primes-iter a b))
 
 (define (search-for-primes-iter a b)
   (if (< a b)
@@ -729,6 +729,8 @@
         (else
           (remainder (* base (expmod base (- exp 1) m))
                      m))))
+(define (random x)
+  (modulo (sys-random) x))
 
 (define (fermat-test n)
   (define (try-it a)
@@ -736,9 +738,9 @@
   (try-it (+ 1 (random (- n 1)))))
 
 (define (fast-prime? n times)
-  (cond ((= times 0) true)
+  (cond ((= times 0) #t)
         ((fermat-test n) (fast-prime? n (- times 1)))
-        (else false)))
+        (else #f)))
 
 (define (divides? a b)
   (= (remainder b a) 0))
@@ -748,8 +750,26 @@
 
 
 ; 1.25
+(define (expmod base exp m)
+  (remainder (fast-expt base exp) m))
 
-;pass
+(define (fast-expt b n)
+  (cond ((= n 0) 1)
+        ((even? n) (square (fast-expt b (/ n 2))))
+        (else (* b (fast-expt b (- n 1))))))
+
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (square (expmod base (/ exp 2) m))
+                    m))
+        (else
+          (remainder (* base (expmod base (- exp 1) m))
+                     m))))
+
+;; 新しいコードは古いコードと同じように動くと思われる
+;;
 
 ; 1.26
 (define (expmod base exp m)
