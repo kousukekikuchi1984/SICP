@@ -629,7 +629,7 @@
 
 
 ; 1.23
- (define (timed-prime-test n)
+(define (timed-prime-test n)
   (newline)
   (display n)
   (start-prime-test n (runtime)))
@@ -682,55 +682,19 @@
 ;
 ;
 ;1.24 pass
-;f(1000000)/f(1000) = 1/2 であるはず（logで増加するため
+;f(1000000)/f(1000) = 2 であるはず（logで増加するため
 ;わからん
+;
 
-(define (timed-prime-test n)
-  (newline)
-  (display n)
-  (start-prime-test n (runtime)))
-
-(define (start-prime-test n start-time)
-  (if (fast-prime? n 100)
-    (report-prime (- (runtime) start-time))))
-
-(define (report-prime elapsed-time)
-  (display " *** ")
-  (display elapsed-time))
-(define (search-for-primes a b)
-(search-for-primes-iter a b))
-
-(define (search-for-primes-iter a b)
-  (if (< a b)
-    (and (if (fast-prime? a 100)
-           (timed-prime-test a))
-           (search-for-primes-iter (+ a 1) b))))
-
-(define (runtime)
-  (use srfi-11)
-  (let-values (((a b) (sys-gettimeofday)))
-              (+ (* a 1000000) b)))
-
-
-(define (smallest-divisor n)
-  (find-divisor n 2))
-
-
-(define (find-divisor n test-divisor)
-  (cond ((> (square test-divisor) n) n)
-        ((divides? test-divisor n) test-divisor)
-        (else (find-divisor n (+ test-divisor 1)))))
-
+; fast prime
 (define (expmod base exp m)
   (cond ((= exp 0) 1)
         ((even? exp)
          (remainder (square (expmod base (/ exp 2) m))
                     m))
         (else
-          (remainder (* base (expmod base (- exp 1) m))
-                     m))))
-(define (random x)
-  (modulo (sys-random) x))
+         (remainder (* base (expmod base (- exp 1) m))
+                    m))))
 
 (define (fermat-test n)
   (define (try-it a)
@@ -742,12 +706,42 @@
         ((fermat-test n) (fast-prime? n (- times 1)))
         (else #f)))
 
-(define (divides? a b)
-  (= (remainder b a) 0))
+(define (random x)
+  (modulo (sys-random) x))
 
 (define (square x)
   (* x x))
 
+;; timed-prime-test
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+
+(define (start-prime-test n start-time)
+  (if (fast-prime? n 1000)
+    (report-prime (- (runtime) start-time))))
+
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+(define (search-for-primes a b)
+  (search-for-primes-iter a b))
+
+(define (search-for-primes-iter a b)
+  (if (< a b)
+    (and (if (prime? a)
+           (timed-prime-test a))
+           (search-for-primes-iter (+ a 1) b))))
+
+(define (runtime)
+  (use srfi-11)
+  (let-values (((a b) (sys-gettimeofday)))
+              (+ (* a 1000000) b)))
+
+; 1013:       6038
+; 100000037: 13043
+;            1:2 ちょい
 
 ; 1.25
 (define (expmod base exp m)
@@ -769,7 +763,11 @@
                      m))))
 
 ;; 新しいコードは古いコードと同じように動くと思われる
-;;
+;; 1013: 72399
+;  100000037: 動かん
+;  上の式では、すべての値を再帰的に計算してから評価しているが下の式では、
+;  余りを繰り返し評価している。
+;
 
 ; 1.26
 (define (expmod base exp m)
@@ -794,4 +792,55 @@
 ;
 
 ; 1.27
-;
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (square (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder (* base (expmod base (- exp 1) m))
+                    m))))
+
+(define (fermat-test n)
+ (try-it (+ 1 (random (- n 1)))))
+
+(define (fast-prime? n times)
+  (cond ((= times 0) #t)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (else #f)))
+
+(define (try-it a n)
+  (= (expmod a n n) a))
+
+(define (random x)
+  (modulo (sys-random) x))
+
+(define (square x)
+  (* x x))
+
+(define (carmichael n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (define (carmichael-check b)
+    (if (= b 1)
+      #t
+      (and (try-it b)
+           (carmichael-check (- b 1)))))
+  (carmichael-check (- n 1)))
+
+;; gosh> (carmichael 561)
+;; #t
+;; gosh> (carmichael 1105)
+;; #t
+;; gosh> (carmichael 1729)
+;; #t
+;; gosh> (carmichael 2465)
+;; #t
+;; gosh> (carmichael 2821)
+;; #t
+;; gosh> (carmichael 6601)
+;; #t
+;;
+
+;1.28
