@@ -843,4 +843,39 @@
 ;; #t
 ;;
 
-;1.28
+;1.28 millar-rabin test
+;どうやら文章を数式化すると
+; x ≠ 1
+; x ≠ n - 1
+; x^2 ≡ 1 (mod n)
+
+(define (millar-rabin x n)
+  (and (not (= x 1))
+       (not (= x (- n 1)))
+       (= (remainder (* x x) n) 1)))
+
+
+; 判定条件を増やす
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((millar-rabin base m) 1)
+        ((even? exp)
+         (remainder (square (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder (* base (expmod base (- exp 1) m))
+                    m))))
+
+;gosh> (carmichael 561)
+;#f
+;gosh> (carmichael 1105)
+;#f
+;gosh> (carmichael 1729)
+;#f
+;gosh> (carmichael 2465)
+;#f
+;gosh> (carmichael 2821)
+;#f
+;gosh> (carmichael 6601)
+;#f
+;
