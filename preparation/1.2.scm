@@ -681,10 +681,8 @@
 ; 実行時間は1/route(2)になる。  appendix: route(2) = 1.414
 ;
 ;
-;1.24 pass
+;1.24
 ;f(1000000)/f(1000) = 2 であるはず（logで増加するため
-;わからん
-;
 
 ; fast prime
 (define (expmod base exp m)
@@ -878,4 +876,4 @@
 ;#f
 ;gosh> (carmichael 6601)
 ;#f
-;
+
